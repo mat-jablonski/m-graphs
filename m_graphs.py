@@ -2,6 +2,7 @@ import networkx as nx
 import random
 import matplotlib.pyplot as plt
 import itertools
+import os
 
 RANDOM_M_GRAPHS_OUTPUT_DIRECTORY = "random_m_graphs"
 ALL_M_GRAPHS_OUTPUT_DIRECTORY = "all_m_graphs"
@@ -122,6 +123,8 @@ def is_under(edge1, edge2):
 
 
 def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True):
+    if not os.path.exists(ALL_M_GRAPHS_OUTPUT_DIRECTORY):
+        os.makedirs(ALL_M_GRAPHS_OUTPUT_DIRECTORY)
     
     n = G.number_of_nodes()
     filename = 'm_graph_{0}_{1}'.format(n, counter)
@@ -130,7 +133,7 @@ def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True):
         print(filename, [x for x in G.edges() if abs(x[0] - x[1]) > 2])
 
     if toFile:
-        nx.write_adjlist(G, '{0}/{1}'.format(RANDOM_M_GRAPHS_OUTPUT_DIRECTORY, filename))
+        nx.write_adjlist(G, '{0}/{1}'.format(ALL_M_GRAPHS_OUTPUT_DIRECTORY, filename))
 
     if toImage:
         ax = plt.subplot(111)
@@ -138,7 +141,7 @@ def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True):
 
         nx.draw(G, nx.circular_layout(G), node_size=600, node_color='red', font_size=8, font_weight='bold', with_labels=True)
         plt.tight_layout()
-        plt.savefig('{0}/{1}.png'.format(RANDOM_M_GRAPHS_OUTPUT_DIRECTORY,filename), format="PNG")
+        plt.savefig('{0}/{1}.png'.format(ALL_M_GRAPHS_OUTPUT_DIRECTORY,filename), format="PNG")
 
         plt.close()
 
@@ -196,7 +199,9 @@ def color_graph(G):
 	return T[tuple(G.nodes())]
 		
 
-G = generate_random_m_graph_with_n_nodes(15)
+G = generate_random_m_graph_with_n_nodes(12)
 chromatic_number = color_graph(G)
 print('chromatic_number', chromatic_number)
+
+generate_all_m_graphs_with_n_nodes(9)
     

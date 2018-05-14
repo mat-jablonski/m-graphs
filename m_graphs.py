@@ -175,10 +175,14 @@ def color_graph(G):
 		min_chi = G.number_of_nodes()
 		subsets = [s for r in range(1, len(w) + 1) for s in itertools.combinations(w, r)]  # non-empty subsets
 		
-		for s in subsets:		
-			g_s = G.subgraph(s)
-			if g_s.number_of_edges() > 0:
-				continue
+		for s in subsets:
+			if len(s) == len(w):
+				g_s = G.subgraph(s)
+				if g_s.number_of_edges() > 0:
+					continue
+			else:
+				if T[s] > 1:
+					continue
 
 			temp = list(set(w) - set(s))
 			temp.sort()
@@ -192,7 +196,7 @@ def color_graph(G):
 	return T[tuple(G.nodes())]
 		
 
-G = generate_random_m_graph_with_n_nodes(5)
+G = generate_random_m_graph_with_n_nodes(15)
 chromatic_number = color_graph(G)
 print('chromatic_number', chromatic_number)
     

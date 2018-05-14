@@ -121,7 +121,7 @@ def is_under(edge1, edge2):
     return c1 and c2 and c3 and c4 
 
 
-def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True, onlyLongEdgesToConsole=True):
+def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True):
     
     n = G.number_of_nodes()
     filename = 'm_graph_{0}_{1}'.format(n, counter)
@@ -157,7 +157,42 @@ def generate_random_m_graph_with_n_nodes(n):
     add_random_long_edges(G)
     save_graph(G)
 
+    return G
 
-for i in range(4, 12):
-    generate_all_m_graphs_with_n_nodes(i)
+
+def color_graph(G):
+	T = {w: -1 for r in range(G.number_of_nodes() + 1) for w in itertools.combinations(G.nodes(), r)}  # set(w)
+	T[()] = 0
+
+	for w in T.keys():
+		if len(w) == 1:
+			T[w] = 1
+	
+	for w in T.keys():
+		if len(w) <= 1:
+			continue
+
+		min_chi = G.number_of_nodes()
+		subsets = [s for r in range(1, len(w) + 1) for s in itertools.combinations(w, r)]  # non-empty subsets
+		
+		for s in subsets:		
+			g_s = G.subgraph(s)
+			if g_s.number_of_edges() > 0:
+				continue
+
+			temp = list(set(w) - set(s))
+			temp.sort()
+			temp = tuple(temp)
+				
+			if T[temp] < min_chi:
+				min_chi = T[temp]
+
+		T[w] = min_chi + 1
+
+	return T[tuple(G.nodes())]
+		
+
+G = generate_random_m_graph_with_n_nodes(5)
+chromatic_number = color_graph(G)
+print('chromatic_number', chromatic_number)
     

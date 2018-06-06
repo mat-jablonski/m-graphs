@@ -3,8 +3,9 @@ import random
 import matplotlib.pyplot as plt
 import itertools
 import os
+import argparse
 
-RANDOM_M_GRAPHS_OUTPUT_DIRECTORY = "random_m_graphs"
+RANDOM_M_GRAPHS_OUTPUT_DIRECTORY = "output"
 ALL_M_GRAPHS_OUTPUT_DIRECTORY = "all_m_graphs"
 
 
@@ -84,14 +85,14 @@ def check_if_maximal(G, edges):
     return True
 
 
-def add_long_edges_starting_at(G, edges, left_end, rightmost_end, counter):
+def add_long_edges_starting_at(G, edges, left_end, rightmost_end, counter, args):
 
     n = G.number_of_nodes()
 
     if left_end >= n - 2:
         if check_if_maximal(G, edges):
             G.add_edges_from(edges)
-            save_graph(G, counter)
+            save_graph(G, args.output_directory, counter)
             G.remove_edges_from(edges)
             counter = counter + 1
         
@@ -106,7 +107,7 @@ def add_long_edges_starting_at(G, edges, left_end, rightmost_end, counter):
                     new_edges.append((left_end, right_end))
                     if right_end > new_rightmost_end:
                         new_rightmost_end = right_end
-            counter = add_long_edges_starting_at(G, new_edges, left_end + 1, new_rightmost_end, counter)
+            counter = add_long_edges_starting_at(G, new_edges, left_end + 1, new_rightmost_end, counter, args)
 
     return counter
 
@@ -122,9 +123,9 @@ def is_under(edge1, edge2):
     return c1 and c2 and c3 and c4 
 
 
-def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True):
-    if not os.path.exists(ALL_M_GRAPHS_OUTPUT_DIRECTORY):
-        os.makedirs(ALL_M_GRAPHS_OUTPUT_DIRECTORY)
+def save_graph(G, output_directory, counter=1, toConsole=True, toFile=True, toImage=True):
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
     
     n = G.number_of_nodes()
     filename = 'm_graph_{0}_{1}'.format(n, counter)
@@ -133,7 +134,7 @@ def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True):
         print(filename, [x for x in G.edges() if abs(x[0] - x[1]) > 2])
 
     if toFile:
-        nx.write_adjlist(G, '{0}/{1}'.format(ALL_M_GRAPHS_OUTPUT_DIRECTORY, filename))
+        nx.write_adjlist(G, '{0}/{1}'.format(output_directory, filename))
 
     if toImage:
         ax = plt.subplot(111)
@@ -141,24 +142,24 @@ def save_graph(G, counter=1, toConsole=True, toFile=True, toImage=True):
 
         nx.draw(G, nx.circular_layout(G), node_size=600, node_color='red', font_size=8, font_weight='bold', with_labels=True)
         plt.tight_layout()
-        plt.savefig('{0}/{1}.png'.format(ALL_M_GRAPHS_OUTPUT_DIRECTORY,filename), format="PNG")
+        plt.savefig('{0}/{1}.png'.format(output_directory,filename), format="PNG")
 
         plt.close()
 
 
-def generate_all_m_graphs_with_n_nodes(n):
+def generate_all_m_graphs_with_n_nodes(args):
     G = nx.Graph()
-    G.add_nodes_from(list(range(1, n + 1)))
+    G.add_nodes_from(list(range(1, args.all + 1)))
     add_short_edges(G)
-    add_long_edges_starting_at(G, [], 1, 4, 1)
+    add_long_edges_starting_at(G, [], 1, 4, 1, args)
 
 
-def generate_random_m_graph_with_n_nodes(n):
+def generate_random_m_graph_with_n_nodes(args):
     G = nx.Graph()
-    G.add_nodes_from(list(range(1, n + 1)))
+    G.add_nodes_from(list(range(1, args.random + 1)))
     add_short_edges(G)
     add_random_long_edges(G)
-    save_graph(G)
+    save_graph(G, args.output_directory)
 
     return G
 
@@ -199,9 +200,21 @@ def color_graph(G):
 	return T[tuple(G.nodes())]
 		
 
-G = generate_random_m_graph_with_n_nodes(12)
-chromatic_number = color_graph(G)
-print('chromatic_number', chromatic_number)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='M-graphs')
+    parser.add_argument('--output_directory', type=str, required=True, default="output",
+                        help='Generate random graph with given N nodes.')
+    parser.add_argument('--random', type=int, required=False,
+                        help='Generate random graph with given N nodes.')
+    parser.add_argument('--all', type=int, required=False,
+                        help='Generate all graphs with given N nodes.')
+   
+    args = parser.parse_args()
 
-generate_all_m_graphs_with_n_nodes(9)
+    if(args.random != None ):
+        G = generate_random_m_graph_with_n_nodes(args)
+        chromatic_number = color_graph(G)
+        print('chromatic_number', chromatic_number)
+    if(args.all != None ):
+        generate_all_m_graphs_with_n_nodes(args)
     

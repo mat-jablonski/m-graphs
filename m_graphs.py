@@ -4,9 +4,7 @@ import matplotlib.pyplot as plt
 import itertools
 import os
 import argparse
-
-RANDOM_M_GRAPHS_OUTPUT_DIRECTORY = "output"
-ALL_M_GRAPHS_OUTPUT_DIRECTORY = "all_m_graphs"
+import time
 
 
 def add_short_edges(G):
@@ -213,8 +211,11 @@ if __name__ == '__main__':
 
     if(args.random != None ):
         G = generate_random_m_graph_with_n_nodes(args)
+        start = time.time()
         chromatic_number = color_graph(G)
-        print('chromatic_number', chromatic_number)
+        end = time.time()
+        print('chromatic_number: {0}, computed in: {1} seconds'.format(chromatic_number, end - start))
+
     if(args.all != None ):
         generate_all_m_graphs_with_n_nodes(args)
     

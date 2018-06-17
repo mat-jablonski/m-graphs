@@ -195,7 +195,7 @@ def color_graph(G):
                 min_chi = T[temp]
 
         T[w] = min_chi + 1
-    sww=G.nodes()
+        
     return T[tuple(G.nodes())]
 
 

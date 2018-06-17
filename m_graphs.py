@@ -99,7 +99,7 @@ def add_long_edges_starting_at(G, edges, left_end, rightmost_end, counter, args)
     for nr_of_edges in range(0, n + 1 - rightmost_end + 1):
         for right_ends in set(itertools.combinations(list(range(max(rightmost_end, left_end + 3), n + 1)), nr_of_edges)):
             new_rightmost_end = rightmost_end
-            new_edges = edges.copy()
+            new_edges = edges[:]
             if right_ends:  
                 for right_end in right_ends:
                     new_edges.append((left_end, right_end))
@@ -170,7 +170,7 @@ def color_graph(G):
 		if len(w) == 1:
 			T[w] = 1
 	
-	for w in T.keys():
+	for w in sorted(T.keys(), key=len):
 		if len(w) <= 1:
 			continue
 

@@ -200,14 +200,23 @@ def color_graph(G):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='M-graphs')
-    parser.add_argument('--output_directory', type=str, required=True, default="output",
+    parser.add_argument('--output_directory', type=str, required=False, default="output",
                         help='Generate random graph with given N nodes.')
     parser.add_argument('--random', type=int, required=False,
                         help='Generate random graph with given N nodes.')
     parser.add_argument('--all', type=int, required=False,
                         help='Generate all graphs with given N nodes.')
+    parser.add_argument('--graph_to_color_path', type=str, required=False,
+                        help='Path to graph to color.')
    
     args = parser.parse_args()
+
+    if(args.graph_to_color_path != None ):
+        G = nx.read_adjlist(args.graph_to_color_path)    
+        start = time.time()
+        chromatic_number = color_graph(G)
+        end = time.time()
+        print('chromatic_number: {0}, computed in: {1} seconds'.format(chromatic_number, end - start))
 
     if(args.random != None ):
         G = generate_random_m_graph_with_n_nodes(args)
